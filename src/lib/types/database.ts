@@ -119,6 +119,7 @@ export interface Database {
           check_in: string | null;
           check_out: string | null;
           status: AttendanceStatus;
+          photo_url: string | null;
           created_at: string;
         };
         Insert: {
@@ -129,6 +130,7 @@ export interface Database {
           check_in?: string | null;
           check_out?: string | null;
           status?: AttendanceStatus;
+          photo_url?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["attendance_records"]["Insert"]>;
         Relationships: [
@@ -237,7 +239,7 @@ export interface Database {
         Returns: { employee_id: string; full_name: string }[];
       };
       record_check_in: {
-        Args: { org_slug: string; p_employee_id: string };
+        Args: { org_slug: string; p_employee_id: string; p_photo_url?: string | null };
         Returns: { status: AttendanceStatus; check_in: string }[];
       };
       record_check_out: {

@@ -13,11 +13,17 @@ export default async function EmployeesPage() {
     listDepartments(organization.id),
   ]);
 
+  const activeCount = employees.filter((e) => e.status === "active").length;
+  const maxEmployees = PLANS[organization.plan].limits.maxEmployees;
+
   return (
     <EmployeesView
       employees={employees}
       departments={departments}
       canImportCsv={PLANS[organization.plan].limits.csvImport}
+      planName={PLANS[organization.plan].name}
+      employeeCount={activeCount}
+      maxEmployees={maxEmployees}
     />
   );
 }

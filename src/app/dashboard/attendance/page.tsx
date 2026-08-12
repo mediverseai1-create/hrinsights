@@ -29,6 +29,7 @@ export default async function AttendancePage() {
         checkIn: record?.check_in ?? null,
         checkOut: record?.check_out ?? null,
         status: record?.status ?? "not-checked-in",
+        photoUrl: record?.photo_url ?? null,
       };
     });
 

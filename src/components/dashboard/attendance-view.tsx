@@ -21,6 +21,7 @@ export interface AttendanceRowData {
   checkIn: string | null;
   checkOut: string | null;
   status: AttendanceStatus | "not-checked-in";
+  photoUrl: string | null;
 }
 
 const STATUS_TONE: Record<string, "success" | "warning" | "danger" | "neutral"> = {
@@ -66,11 +67,19 @@ export function AttendanceView({
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
-    return rows.filter((r) => {
-      if (department !== "all" && r.department !== department) return false;
-      if (query && !r.name.toLowerCase().includes(query.toLowerCase())) return false;
-      return true;
-    });
+    return rows
+      .filter((r) => {
+        if (department !== "all" && r.department !== department) return false;
+        if (query && !r.name.toLowerCase().includes(query.toLowerCase())) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        // Live check-in feed: most recent arrivals first, not-yet-arrived at the bottom.
+        if (!a.checkIn && !b.checkIn) return a.name.localeCompare(b.name);
+        if (!a.checkIn) return 1;
+        if (!b.checkIn) return -1;
+        return new Date(b.checkIn).getTime() - new Date(a.checkIn).getTime();
+      });
   }, [rows, query, department]);
 
   function handleCheckIn(id: string) {
@@ -151,7 +160,23 @@ export function AttendanceView({
               <Tbody>
                 {filtered.map((r) => (
                   <Tr key={r.employeeId}>
-                    <Td>{r.name}</Td>
+                    <Td>
+                      <div className="flex items-center gap-2.5">
+                        {r.photoUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={r.photoUrl}
+                            alt=""
+                            className="h-7 w-7 rounded-full object-cover"
+                          />
+                        ) : (
+                          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-forest-950 text-xs font-semibold text-cream-50">
+                            {r.name.charAt(0).toUpperCase()}
+                          </span>
+                        )}
+                        {r.name}
+                      </div>
+                    </Td>
                     <Td className="text-ink-500">{r.department}</Td>
                     <Td>{formatTime(r.checkIn)}</Td>
                     <Td>{formatTime(r.checkOut)}</Td>

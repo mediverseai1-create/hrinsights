@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus, Upload, Search, Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Plus, Upload, Search, Pencil, Trash2, Lock } from "lucide-react";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, Thead, Tbody, Tr, Th, Td } from "@/components/ui/table";
@@ -19,16 +19,29 @@ export function EmployeesView({
   employees,
   departments,
   canImportCsv,
+  planName,
+  employeeCount,
+  maxEmployees,
 }: {
   employees: EmployeeListItem[];
   departments: { id: string; name: string }[];
   canImportCsv: boolean;
+  planName: string;
+  employeeCount: number;
+  maxEmployees: number;
 }) {
   const [query, setQuery] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [editing, setEditing] = useState<EditableEmployee | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const atLimit = employeeCount >= maxEmployees;
+
+  function openAddDialog() {
+    if (atLimit) return;
+    setEditing(null);
+    setFormOpen(true);
+  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -53,28 +66,49 @@ export function EmployeesView({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold text-ink-900">Employees</h1>
-          <p className="mt-1 text-sm text-ink-500">Add and manage the people in your workspace.</p>
+          <p className="mt-1 text-sm text-ink-500">
+            Add and manage the people in your workspace.{" "}
+            {Number.isFinite(maxEmployees) && (
+              <span className="text-ink-400">
+                {employeeCount} of {maxEmployees} used on {planName}.
+              </span>
+            )}
+          </p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
-            onClick={() => (canImportCsv ? setImportOpen(true) : undefined)}
-            title={canImportCsv ? undefined : "Upgrade to Starter or Pro to import CSV files"}
+            onClick={() => (canImportCsv && !atLimit ? setImportOpen(true) : undefined)}
+            disabled={!canImportCsv || atLimit}
+            title={
+              !canImportCsv
+                ? "Upgrade to Starter or Pro to import CSV files"
+                : atLimit
+                ? `You've reached the ${maxEmployees}-employee limit on ${planName}`
+                : undefined
+            }
           >
             <Upload className="h-4 w-4" />
             Import CSV
           </Button>
-          <Button
-            onClick={() => {
-              setEditing(null);
-              setFormOpen(true);
-            }}
-          >
-            <Plus className="h-4 w-4" />
+          <Button onClick={openAddDialog} disabled={atLimit} title={atLimit ? `You've reached the ${maxEmployees}-employee limit on ${planName}` : undefined}>
+            {atLimit ? <Lock className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
             Add employee
           </Button>
         </div>
       </div>
+
+      {atLimit && (
+        <div className="mt-4 flex flex-col items-start justify-between gap-3 rounded-xl border border-warning-600/20 bg-warning-50 p-4 sm:flex-row sm:items-center">
+          <p className="text-sm text-warning-600">
+            You&apos;ve reached the {maxEmployees}-employee limit on the {planName} plan. Upgrade to add
+            more people.
+          </p>
+          <ButtonLink href="/pricing" size="sm" variant="secondary">
+            View plans
+          </ButtonLink>
+        </div>
+      )}
 
       <div className="relative mt-5 max-w-sm">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
@@ -97,7 +131,7 @@ export function EmployeesView({
             }
             action={
               employees.length === 0 && (
-                <Button onClick={() => setFormOpen(true)}>
+                <Button onClick={openAddDialog} disabled={atLimit}>
                   <Plus className="h-4 w-4" />
                   Add employee
                 </Button>

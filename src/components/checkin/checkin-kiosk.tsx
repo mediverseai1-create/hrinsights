@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Camera } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ interface RosterEntry {
   full_name: string;
 }
 
-type Result = { kind: "check-in"; status: string } | { kind: "check-out" } | null;
+type Result = { kind: "check-in"; status: string; photoUrl: string | null } | { kind: "check-out" } | null;
 
 export function CheckInKiosk({ orgSlug, orgName }: { orgSlug: string; orgName: string }) {
   const [now, setNow] = useState(new Date());
@@ -22,6 +23,8 @@ export function CheckInKiosk({ orgSlug, orgName }: { orgSlug: string; orgName: s
   const [busyId, setBusyId] = useState<string | null>(null);
   const [result, setResult] = useState<{ name: string; data: Result } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const pendingEntry = useRef<RosterEntry | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);
@@ -41,19 +44,56 @@ export function CheckInKiosk({ orgSlug, orgName }: { orgSlug: string; orgName: s
 
   const filtered = roster.filter((r) => r.full_name.toLowerCase().includes(query.toLowerCase()));
 
-  async function checkIn(entry: RosterEntry) {
+  async function uploadPhoto(entry: RosterEntry, file: File) {
+    const supabase = createClient();
+    const ext = file.type === "image/png" ? "png" : "jpg";
+    const path = `${orgSlug}/${entry.employee_id}-${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabase.storage.from("checkin-photos").upload(path, file, {
+      contentType: file.type,
+      upsert: false,
+    });
+    if (uploadError) return null;
+    const { data } = supabase.storage.from("checkin-photos").getPublicUrl(path);
+    return data.publicUrl;
+  }
+
+  async function checkIn(entry: RosterEntry, photoUrl: string | null) {
     setBusyId(entry.employee_id);
     setError(null);
     const supabase = createClient();
     const { data, error } = await supabase
-      .rpc("record_check_in", { org_slug: orgSlug, p_employee_id: entry.employee_id })
+      .rpc("record_check_in", { org_slug: orgSlug, p_employee_id: entry.employee_id, p_photo_url: photoUrl })
       .single();
     setBusyId(null);
     if (error) {
       setError(error.message);
       return;
     }
-    setResult({ name: entry.full_name, data: { kind: "check-in", status: data?.status ?? "present" } });
+    setResult({
+      name: entry.full_name,
+      data: { kind: "check-in", status: data?.status ?? "present", photoUrl },
+    });
+  }
+
+  function startCheckIn(entry: RosterEntry) {
+    pendingEntry.current = entry;
+    photoInputRef.current?.click();
+  }
+
+  async function handlePhotoCaptured(file: File | undefined) {
+    const entry = pendingEntry.current;
+    pendingEntry.current = null;
+    if (!entry) return;
+
+    if (!file) {
+      // Camera/file picker was cancelled — still let them check in without a photo.
+      await checkIn(entry, null);
+      return;
+    }
+
+    setBusyId(entry.employee_id);
+    const photoUrl = await uploadPhoto(entry, file);
+    await checkIn(entry, photoUrl);
   }
 
   async function checkOut(entry: RosterEntry) {
@@ -76,6 +116,14 @@ export function CheckInKiosk({ orgSlug, orgName }: { orgSlug: string; orgName: s
     return (
       <div className="flex min-h-screen items-center justify-center bg-forest-950 px-4">
         <Card className="w-full max-w-sm p-8 text-center">
+          {result.data?.kind === "check-in" && result.data.photoUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={result.data.photoUrl}
+              alt=""
+              className="mx-auto mb-4 h-20 w-20 rounded-full object-cover"
+            />
+          )}
           <p className="text-sm text-ink-500">
             {result.data?.kind === "check-in" ? "Checked in" : "Checked out"}
           </p>
@@ -96,6 +144,14 @@ export function CheckInKiosk({ orgSlug, orgName }: { orgSlug: string; orgName: s
 
   return (
     <div className="min-h-screen bg-forest-950 px-4 py-10">
+      <input
+        ref={photoInputRef}
+        type="file"
+        accept="image/*"
+        capture="user"
+        className="hidden"
+        onChange={(e) => handlePhotoCaptured(e.target.files?.[0])}
+      />
       <div className="mx-auto w-full max-w-md text-center">
         <LogoMark className="mx-auto h-10 w-10" />
         <p className="mt-4 text-sm text-cream-50/60">{orgName}</p>
@@ -136,14 +192,20 @@ export function CheckInKiosk({ orgSlug, orgName }: { orgSlug: string; orgName: s
                   <Button
                     size="sm"
                     disabled={busyId === entry.employee_id}
-                    onClick={() => checkIn(entry)}
+                    onClick={() => startCheckIn(entry)}
                   >
+                    <Camera className="h-3.5 w-3.5" />
                     Check in
                   </Button>
                 </div>
               </div>
             ))}
           </div>
+
+          <p className="mt-3 text-center text-xs text-ink-400">
+            Check-in opens your camera to attach a photo. If your device can&apos;t take one, it still
+            checks you in.
+          </p>
 
           {error && <p className="mt-2 text-xs text-danger-600">{error}</p>}
         </Card>
