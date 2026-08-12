@@ -31,7 +31,7 @@ export function Topbar({
 
       <div className="ml-auto flex items-center gap-3">
         {plan === "free" && (
-          <a href="/pricing" className="hidden sm:block">
+          <a href="/pricing">
             <Badge tone="brand" className="cursor-pointer">
               Upgrade
             </Badge>
