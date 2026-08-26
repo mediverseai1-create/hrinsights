@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { AlertTriangle, UserX, TrendingDown, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, UserX, TrendingDown, CheckCircle2, UserPlus } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export interface AttentionItem {
   id: string;
-  icon: "warning" | "absent" | "trend" | "positive";
+  icon: "warning" | "absent" | "trend" | "positive" | "recruiting";
   message: string;
   href?: string;
   actionLabel?: string;
@@ -15,6 +15,7 @@ const ICONS = {
   absent: UserX,
   trend: TrendingDown,
   positive: CheckCircle2,
+  recruiting: UserPlus,
 };
 
 const TONE = {
@@ -22,6 +23,7 @@ const TONE = {
   absent: "text-danger-600",
   trend: "text-warning-600",
   positive: "text-success-600",
+  recruiting: "text-forest-700",
 };
 
 export function NeedsAttention({ items }: { items: AttentionItem[] }) {

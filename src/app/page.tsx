@@ -1,10 +1,10 @@
 import {
+  UserPlus,
+  MessagesSquare,
   Clock,
-  Users,
   BarChart3,
   PenSquare,
-  Upload,
-  ShieldCheck,
+  BookOpen,
   ArrowRight,
 } from "lucide-react";
 import { MarketingNav } from "@/components/marketing/marketing-nav";
@@ -16,57 +16,68 @@ import { Card } from "@/components/ui/card";
 
 const CAPABILITIES = [
   {
-    icon: Clock,
-    title: "Attendance, tracked automatically",
+    icon: UserPlus,
+    title: "Recruiting Agent",
     description:
-      "Staff check in from a shared link — no login required. See who's in, who's late, and who hasn't shown up, in real time.",
+      "Describe who you need to hire, in plain language. HRInsights drafts the posting, then reads and ranks every application against your requirements.",
   },
   {
-    icon: Users,
-    title: "One place for workforce data",
+    icon: MessagesSquare,
+    title: "Screening & interviews",
     description:
-      "Add employees by hand or import a CSV. Departments, shifts, and roles stay organized and searchable.",
+      "Auto-generated screening questions and interview briefs, plus a structured summary after every conversation — evidence, not vibes.",
+  },
+  {
+    icon: Clock,
+    title: "Attendance & people",
+    description:
+      "Staff check in from a shared link. Every employee gets one workspace — attendance, documents, timeline, and notes.",
   },
   {
     icon: BarChart3,
-    title: "Trends you can act on",
+    title: "Workforce intelligence",
     description:
-      "Attendance rate, department distribution, and lateness patterns — calculated from your real data, not guesses.",
+      "Attendance patterns, department trends, and staffing changes explained in plain language, backed by the real numbers.",
   },
   {
     icon: PenSquare,
-    title: "Writing assistant for HR letters",
+    title: "HR documents on demand",
     description:
-      "Draft query, warning, and confirmation letters grounded in what actually happened. (Pro plan.)",
+      "Say what happened — HRInsights pulls the relevant records and drafts the query, warning, or reference letter for you to review.",
   },
   {
-    icon: Upload,
-    title: "Bring your own data",
+    icon: BookOpen,
+    title: "Company knowledge & HR assistant",
     description:
-      "Download a template, fill it in, and import your whole team in minutes — with validation before anything is saved.",
+      "Upload your policies once. Ask HRInsights anything — answers are grounded in your own documents and data, not guesses.",
   },
-  {
-    icon: ShieldCheck,
-    title: "Built for your organization only",
-    description:
-      "Every organization's data is isolated at the database level. Your team never sees another company's records.",
-  },
+];
+
+const WORKFLOW = [
+  "Need to hire",
+  "Find & review candidates",
+  "Screen",
+  "Interview",
+  "Hire",
+  "Onboard",
+  "Manage",
+  "Understand your workforce",
 ];
 
 const STEPS = [
   { step: "1", title: "Create your workspace", description: "Sign up and tell us a little about your organization." },
-  { step: "2", title: "Add your team", description: "Add employees one at a time, or import a CSV in a few clicks." },
-  { step: "3", title: "See what's happening", description: "Share the check-in link, then read attendance, trends, and insights from real data." },
+  { step: "2", title: "Bring your team and your hiring", description: "Add employees, or describe a role you need to fill — HRInsights takes it from there." },
+  { step: "3", title: "Review, don't re-type", description: "Candidates get screened, interviews get prepared, and letters get drafted. You review and approve." },
 ];
 
 const FAQS = [
   {
     q: "Is HRInsights a replacement for HR software we already use?",
-    a: "No — HRInsights is a focused attendance and workforce-insight layer. It's built to sit alongside your existing processes, not replace professional HR judgment.",
+    a: "No — HRInsights is a decision-support layer for recruiting, attendance, and workforce data. It's built to sit alongside your existing processes and judgment, not replace them.",
   },
   {
     q: "Where does the data in my dashboard come from?",
-    a: "Entirely from what your organization enters: employees you add or import, and attendance check-ins. We don't fabricate metrics — if there's no data yet, you'll see an empty state instead.",
+    a: "Entirely from what your organization enters or uploads: employees, attendance check-ins, job postings, and applications. We don't fabricate metrics — if there's no data yet, you'll see an empty state instead.",
   },
   {
     q: "Do my employees need an account to check in?",
@@ -91,11 +102,11 @@ export default function LandingPage() {
               Workforce intelligence for growing teams
             </span>
             <h1 className="mt-5 text-4xl font-semibold tracking-tight text-ink-900 sm:text-5xl">
-              Understand your workforce — don&apos;t just track it.
+              Your workforce, understood. Your HR work, handled.
             </h1>
             <p className="mt-5 text-lg text-ink-500">
-              HRInsights turns attendance and employee data into clear, honest dashboards — so you can
-              see what&apos;s actually happening with your team and decide what to do about it.
+              HRInsights helps teams recruit, interview, manage employees, understand their workforce,
+              and handle HR work — from one connected workspace.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <ButtonLink href="/signup" size="lg">
@@ -109,6 +120,17 @@ export default function LandingPage() {
               </a>
             </div>
           </div>
+
+          <div className="mt-10 flex flex-wrap items-center gap-x-2 gap-y-3 text-sm text-ink-500">
+            {WORKFLOW.map((step, i) => (
+              <span key={step} className="flex items-center gap-2">
+                <span className="rounded-full border border-ink-900/10 bg-white px-3 py-1.5 text-ink-700">
+                  {step}
+                </span>
+                {i < WORKFLOW.length - 1 && <ArrowRight className="h-3.5 w-3.5 text-ink-400" />}
+              </span>
+            ))}
+          </div>
         </section>
 
         {/* Product preview */}
@@ -120,7 +142,7 @@ export default function LandingPage() {
         <section className="border-y border-ink-900/8 bg-cream-50 py-20">
           <div className="mx-auto max-w-6xl px-6">
             <h2 className="text-2xl font-semibold text-ink-900 sm:text-3xl">
-              Everything you need to read your workforce clearly
+              One system, from your first job posting to your whole workforce
             </h2>
             <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {CAPABILITIES.map((c) => (
@@ -156,7 +178,8 @@ export default function LandingPage() {
             <h2 className="text-2xl font-semibold sm:text-3xl">Built for teams that are done guessing</h2>
             <p className="mt-3 max-w-2xl text-cream-50/70">
               HRInsights is for HR managers, operations leads, and founders who need a clear, current
-              read on attendance and workforce composition — without spreadsheets that go stale.
+              read on hiring, attendance, and workforce composition — without spreadsheets that go
+              stale or CVs that pile up unread.
             </p>
           </div>
         </section>

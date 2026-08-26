@@ -65,7 +65,7 @@ export function EmployeesView({
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-ink-900">Employees</h1>
+          <h1 className="text-xl font-semibold text-ink-900">People</h1>
           <p className="mt-1 text-sm text-ink-500">
             Add and manage the people in your workspace.{" "}
             {Number.isFinite(maxEmployees) && (

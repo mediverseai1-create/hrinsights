@@ -13,7 +13,7 @@ import {
 import { InsightsView } from "@/components/dashboard/insights-view";
 import type { AttentionItem } from "@/components/dashboard/needs-attention";
 
-export const metadata: Metadata = { title: "Insights & Reports" };
+export const metadata: Metadata = { title: "Workforce Intelligence" };
 
 export default async function InsightsPage({
   searchParams,

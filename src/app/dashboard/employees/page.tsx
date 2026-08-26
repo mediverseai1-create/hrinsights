@@ -4,7 +4,7 @@ import { listEmployees, listDepartments } from "@/lib/data/employees";
 import { EmployeesView } from "@/components/dashboard/employees-view";
 import { PLANS } from "@/lib/constants";
 
-export const metadata: Metadata = { title: "Employees" };
+export const metadata: Metadata = { title: "People" };
 
 export default async function EmployeesPage() {
   const { organization } = await requireCurrentOrg();

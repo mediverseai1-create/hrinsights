@@ -67,7 +67,7 @@ export function InsightsView({
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-ink-900">Insights & Reports</h1>
+          <h1 className="text-xl font-semibold text-ink-900">Workforce Intelligence</h1>
           <p className="mt-1 text-sm text-ink-500">A simple summary of attendance patterns.</p>
         </div>
         <div className="flex gap-2">

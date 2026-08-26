@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { WritingAssistantView } from "@/components/dashboard/writing-assistant-view";
 import { PLANS } from "@/lib/constants";
 
-export const metadata: Metadata = { title: "Writing Assistant" };
+export const metadata: Metadata = { title: "Documents" };
 
 export default async function WritingAssistantPage() {
   const { organization } = await requireCurrentOrg();

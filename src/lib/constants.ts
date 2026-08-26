@@ -1,18 +1,24 @@
 import {
   LayoutDashboard,
+  UserPlus,
   Clock,
   Users,
-  PenSquare,
   BarChart3,
+  MessagesSquare,
+  PenSquare,
+  BookOpen,
   Settings,
 } from "lucide-react";
 
 export const DASHBOARD_NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { href: "/dashboard/recruiting", label: "Recruiting", icon: UserPlus },
+  { href: "/dashboard/employees", label: "People", icon: Users },
   { href: "/dashboard/attendance", label: "Attendance", icon: Clock },
-  { href: "/dashboard/employees", label: "Employees", icon: Users },
-  { href: "/dashboard/writing-assistant", label: "Writing Assistant", icon: PenSquare },
-  { href: "/dashboard/insights", label: "Insights & Reports", icon: BarChart3 },
+  { href: "/dashboard/insights", label: "Workforce Intelligence", icon: BarChart3 },
+  { href: "/dashboard/assistant", label: "HR Assistant", icon: MessagesSquare },
+  { href: "/dashboard/writing-assistant", label: "Documents", icon: PenSquare },
+  { href: "/dashboard/knowledge", label: "Company Knowledge", icon: BookOpen },
 ] as const;
 
 export const SETTINGS_NAV = [{ href: "/dashboard/settings", label: "Settings", icon: Settings }];

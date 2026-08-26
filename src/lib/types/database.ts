@@ -14,6 +14,19 @@ export type LetterDocType =
   | "offer";
 export type LetterTone = "firm" | "neutral" | "friendly";
 export type ReportType = "workforce_summary" | "department_analysis" | "attendance_trend";
+export type EmploymentType = "full_time" | "part_time" | "contract";
+export type JobPostingStatus = "draft" | "open" | "closed";
+export type CandidateSource = "manual" | "application";
+export type ApplicationStage =
+  | "applied"
+  | "reviewed"
+  | "screening"
+  | "interview"
+  | "final_review"
+  | "offer"
+  | "hired"
+  | "rejected";
+export type CompanyDocumentSource = "pasted" | "upload";
 
 export interface Database {
   public: {
@@ -219,6 +232,136 @@ export interface Database {
             referencedColumns: ["id"];
           },
         ];
+      };
+      job_postings: {
+        Row: {
+          id: string;
+          organization_id: string;
+          title: string;
+          department_id: string | null;
+          location: string | null;
+          employment_type: EmploymentType;
+          salary_min: number | null;
+          salary_max: number | null;
+          salary_currency: string | null;
+          raw_request: string;
+          description: string | null;
+          requirements: string[];
+          status: JobPostingStatus;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          title: string;
+          department_id?: string | null;
+          location?: string | null;
+          employment_type?: EmploymentType;
+          salary_min?: number | null;
+          salary_max?: number | null;
+          salary_currency?: string | null;
+          raw_request: string;
+          description?: string | null;
+          requirements?: string[];
+          status?: JobPostingStatus;
+          created_by?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["job_postings"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "job_postings_department_id_fkey";
+            columns: ["department_id"];
+            referencedRelation: "departments";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      candidates: {
+        Row: {
+          id: string;
+          organization_id: string;
+          full_name: string;
+          email: string | null;
+          phone: string | null;
+          profile_text: string | null;
+          resume_path: string | null;
+          source: CandidateSource;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          full_name: string;
+          email?: string | null;
+          phone?: string | null;
+          profile_text?: string | null;
+          resume_path?: string | null;
+          source?: CandidateSource;
+        };
+        Update: Partial<Database["public"]["Tables"]["candidates"]["Insert"]>;
+        Relationships: [];
+      };
+      applications: {
+        Row: {
+          id: string;
+          organization_id: string;
+          job_posting_id: string;
+          candidate_id: string;
+          stage: ApplicationStage;
+          ai_summary: string | null;
+          ai_match: Record<string, unknown> | null;
+          ai_reviewed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          job_posting_id: string;
+          candidate_id: string;
+          stage?: ApplicationStage;
+          ai_summary?: string | null;
+          ai_match?: Record<string, unknown> | null;
+          ai_reviewed_at?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["applications"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "applications_job_posting_id_fkey";
+            columns: ["job_posting_id"];
+            referencedRelation: "job_postings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "applications_candidate_id_fkey";
+            columns: ["candidate_id"];
+            referencedRelation: "candidates";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      company_documents: {
+        Row: {
+          id: string;
+          organization_id: string;
+          title: string;
+          content: string;
+          source: CompanyDocumentSource;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          title: string;
+          content: string;
+          source?: CompanyDocumentSource;
+          created_by?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["company_documents"]["Insert"]>;
+        Relationships: [];
       };
     };
     Functions: {

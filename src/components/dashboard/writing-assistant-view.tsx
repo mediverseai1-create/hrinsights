@@ -81,7 +81,7 @@ export function WritingAssistantView({
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-ink-900">Writing Assistant</h1>
+      <h1 className="text-xl font-semibold text-ink-900">Documents</h1>
       <p className="mt-1 text-sm text-ink-500">Create an HR letter grounded in what actually happened.</p>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
