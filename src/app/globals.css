@@ -82,3 +82,12 @@ body {
     scrollbar-width: none;
   }
 }
+
+/* Soft, on-brand gradient wash behind the marketing hero — cream base with
+   faint lime and forest tints, never a hard color block. */
+.hero-mesh {
+  background-image:
+    radial-gradient(38rem 24rem at 12% 0%, color-mix(in srgb, var(--color-lime-300) 40%, transparent), transparent),
+    radial-gradient(34rem 26rem at 88% 8%, color-mix(in srgb, var(--color-forest-600) 14%, transparent), transparent),
+    radial-gradient(40rem 30rem at 50% 100%, color-mix(in srgb, var(--color-lime-400) 16%, transparent), transparent);
+}
